@@ -1,4 +1,5 @@
 ﻿using LoanCalculator.Models;
+using LoanCalculator.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -23,9 +24,31 @@ namespace LoanCalculator.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult Calculator()
         {
-            return View();
+            Loan loan = new();
+
+            loan.MonthlyPayment = 0.0m;
+            loan.TotalInterest = 0.0m;
+            loan.TotalCost = 0.0m;
+            loan.InterestRate = 3.5m;
+            loan.FullAmount = 15000m;
+            loan.TermInMonths = 60;
+
+            return View(loan);
+        }
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public IActionResult Calculator(Loan loan)
+        {
+            // Calculate The Loan and Get Payments
+            var loanHelper = new LoanHelper();
+
+            Loan newLoan = loanHelper.GetPayments(loan);
+
+            return View(newLoan);
         }
 
         public IActionResult Privacy()
